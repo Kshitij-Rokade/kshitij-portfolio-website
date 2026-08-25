@@ -1,4 +1,8 @@
-require('dotenv').config({ path: '../.env' });
+// Only load .env for local development (Vercel sets env vars directly)
+if (!process.env.VERCEL) {
+  require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
+}
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -6,16 +10,16 @@ const rateLimit = require('express-rate-limit');
 const path = require('path');
 const connectDB = require('./config/db');
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
+
+// Connect to MongoDB (awaited per-request in serverless, cached across warm invocations)
+connectDB();
 
 // Security middleware
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? process.env.CLIENT_URL
+    ? process.env.CLIENT_URL || true
     : 'http://localhost:5173',
   credentials: true
 }));
@@ -62,10 +66,13 @@ app.get('/api/health', (req, res) => {
 const errorHandler = require('./middleware/errorHandler');
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
-});
+// Only start the server when running locally (not on Vercel)
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  });
+}
 
 module.exports = app;
+
