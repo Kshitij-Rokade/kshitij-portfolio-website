@@ -142,37 +142,6 @@ npm run seed
 npm run dev
 ```
 
-### Default Admin Credentials
-```
-Email: admin@kshitijrokade.dev
-Password: admin123456
-```
-> ⚠️ Change these credentials in production!
-
-### Environment Variables
-
-```env
-MONGODB_URI=mongodb://localhost:27017/portfolio
-JWT_SECRET=your_jwt_secret_here
-JWT_EXPIRE=7d
-PORT=5000
-NODE_ENV=development
-VITE_API_URL=http://localhost:5000/api
-```
-
-## 📦 Deployment
-
-### Frontend (Vercel)
-```bash
-cd client && npm run build
-# Deploy the dist/ folder to Vercel
-```
-
-### Backend (Render / Vercel Serverless)
-- Set environment variables in your hosting platform
-- Point `MONGODB_URI` to MongoDB Atlas
-- Set `NODE_ENV=production`
-
 ## 🎯 Key Design Decisions
 
 1. **Data-driven architecture** — All portfolio content comes from MongoDB via REST APIs. No hardcoded content.
