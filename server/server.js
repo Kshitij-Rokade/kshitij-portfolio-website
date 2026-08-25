@@ -12,8 +12,16 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-// Connect to MongoDB (awaited per-request in serverless, cached across warm invocations)
-connectDB();
+// Middleware to ensure DB connection is ready for each request
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('Database connection error in request middleware:', err);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 // Security middleware
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
